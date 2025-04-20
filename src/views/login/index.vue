@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import {ref,reactive} from 'vue'
-
-
+import { useUserStore } from '@/stores/index'
+const userStore = useUserStore()
 </script>
+
 <template>
   <div>
-    登陆页面
+    登录状态{{ userStore.account.id === null }}
   </div>
 </template>
+
 <style scoped>
 
 </style>
