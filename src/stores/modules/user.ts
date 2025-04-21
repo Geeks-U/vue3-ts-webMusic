@@ -36,9 +36,20 @@ export const useUserStore = defineStore('user', () => {
 
   const cookie = ref<string>('')
 
-  function setUserInfo(accountParam: Account, profileParam: Profile) {
-    account.value = accountParam
-    profile.value = profileParam
+  const isLogin = ref<boolean>(false)
+
+  // 使用泛型函数来更新对象属性(浅拷贝)
+  function safeUpdate<T extends object>(target: T, source: T) {
+    const keys = Object.keys(target) as (keyof T)[]
+    keys.forEach((key) => {
+      target[key] = source[key]
+    })
+  }
+  
+  function setUserInfo(accountParam: Account, profileParam: Profile, isLoginParam: boolean) {
+    safeUpdate(account.value, accountParam)
+    safeUpdate(profile.value, profileParam)
+    isLogin.value = isLoginParam
   }
 
   function setCookie(cookieParam: string) {
@@ -67,6 +78,7 @@ export const useUserStore = defineStore('user', () => {
     account,
     profile,
     cookie,
+    isLogin,
     setUserInfo,
     setCookie,
     removeAll,
