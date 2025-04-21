@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import type { AxiosResponse } from 'axios'
 
 // 二维码登录 获取key
 export const getQrKey = () => {
@@ -14,7 +13,7 @@ export const getQrKey = () => {
 export const getQrCode = (key: string) => {
   return request.get('/login/qr/create', {
     params: {
-      key,
+      key: key,
       qrimg: true,
       timerstamp: Date.now()
     }
@@ -30,7 +29,7 @@ export const getQrCode = (key: string) => {
 export const checkQrCodeState = (key: string) => {
   return request.get('/login/qr/check', {
     params: {
-      key,
+      key: key,
       timerstamp: Date.now()
     }
   })
@@ -41,6 +40,41 @@ export const getLoginStatus = (cookie:string) => {
   return request.post('/login/status',
     {
       cookie: cookie
+    },
+    {
+      params: { timerstamp: Date.now() },
+    })
+}
+
+// 手机号登录 获取验证码
+export const getPhoneCaptcha = (phone: string) => {
+  return request.get('/captcha/sent', {
+    params: {
+      phone: phone,
+      timerstamp: Date.now()
+    }
+  })
+}
+
+// 手机号登录 验证码登录
+export const phoneCaptchaLogin = (phone: string, captcha: string) => {
+  return request.get('/captcha/verify',
+    {
+      params: {
+        phone: phone,
+        captcha: captcha,
+        timerstamp: Date.now()
+      }
+    }
+  )
+}
+
+// 账号密码登录
+export const accountPwdLogin = (account: string, password: string) => {
+  return request.post('/login/cellphone',
+    {
+      phone: account,
+      password: password
     },
     {
       params: { timerstamp: Date.now() },

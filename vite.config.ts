@@ -34,7 +34,7 @@ export default defineConfig({
         }),
         IconsResolver({
           enabledCollections: ['ep'],
-          prefix: 'Icon',
+          prefix: '',
         }),
       ],
     }),

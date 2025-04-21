@@ -50,6 +50,8 @@ export const useUserStore = defineStore('user', () => {
     safeUpdate(account.value, accountParam)
     safeUpdate(profile.value, profileParam)
     isLogin.value = isLoginParam
+    console.log('account', account.value)
+    console.log('profile', profile.value)
   }
 
   function setCookie(cookieParam: string) {
