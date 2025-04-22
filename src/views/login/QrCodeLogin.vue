@@ -1,22 +1,20 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useUserStore } from '@/stores/index'
-
-// 接口
 import { getQrKey, getQrCode, checkQrCodeState, getLoginStatus } from '@/service/login'
-
-
-// 二维码登录数据
 
 const qrKey = ref('')
 const qrImg = ref('')
 const qrState = ref(800)
 let timer: number
 let timerActive = false
-const cookie = ref<string>('')
-const nickname = ref<string | undefined>('')
-const avatarUrl = ref<string | undefined>('')
+
+const cookie = ref('')
+const nickname = ref<string | undefined>('') 
+const avatarUrl = ref<string | undefined>('') 
+
 const userStore = useUserStore()
+const disableGetQrCode = ref(true)
 
 type QrCodeState = {
   code: number
@@ -26,122 +24,191 @@ type QrCodeState = {
   avatarUrl?: string
 }
 
-const disableGetQrCode = ref(true)
-
-// 二维码登录
+// 获取二维码
 const loginQr = () => {
-  // 获取二维码频率控制
   disableGetQrCode.value = true
   setTimeout(() => {
     disableGetQrCode.value = false
   }, 7000)
+
   getQrKey()
     .then((res) => {
       qrKey.value = res.data.unikey
       getQrCode(qrKey.value)
         .then((res) => {
           qrImg.value = res.data.qrimg
-          if (!timerActive){
-            timer = setInterval(() => {
-              getQrState()
-            }, 1500)
+          if (!timerActive) {
+            timer = setInterval(getQrState, 1500)
             timerActive = true
           }
         })
-        .catch((err) => {
-          console.log(err)
-        })
+        .catch(console.log)
     })
-    .catch((err) => {
-      console.log(err)
-    })
+    .catch(console.log)
 }
-// 获取二维码状态
-const getQrState = () => {
 
+const getQrState = () => {
   checkQrCodeState(qrKey.value)
     .then((res) => {
-      console.log(res)
-      qrState.value = (res as unknown as QrCodeState).code
-      if (qrState.value === 800) {
-        // 二维码过期或者不存在
-        console.log('二维码过期或者不存在')
-      } else if (qrState.value === 801) {
-        // 二维码未扫描
-        console.log('二维码等待扫描')
-      } else if (qrState.value === 802) {
-        // 二维码已扫描，等待确认
-        console.log('登录待确认')
-        nickname.value = (res as unknown as QrCodeState).nickname
-        avatarUrl.value = (res as unknown as QrCodeState).avatarUrl
+      const data = res as unknown as QrCodeState
+      qrState.value = data.code
+      if (qrState.value === 802) {
+        nickname.value = data.nickname
+        avatarUrl.value = data.avatarUrl
       } else if (qrState.value === 803) {
-        // 登录成功
-        if (timerActive){
+        if (timerActive) {
           clearInterval(timer)
           timerActive = false
         }
-        cookie.value = (res as unknown as QrCodeState).cookie
+        cookie.value = data.cookie
         userStore.setCookie(cookie.value)
         getLoginStatus(cookie.value)
           .then((res) => {
             userStore.setUserInfo(res.data.account, res.data.profile, true)
             console.log('登录成功，跳转至首页')
           })
-          .catch((err) => {
-            console.log(err)
-          })
+          .catch(console.log)
       }
     })
-    .catch((err) => {
-      console.log(err)
-    })
+    .catch(console.log)
 }
-// 清除数据
+
 const resetQrCodeData = () => {
   qrKey.value = ''
   qrImg.value = ''
   qrState.value = 800
-  if (timerActive){
-    clearInterval(timer)
-    timerActive = false
-  }
   cookie.value = ''
   nickname.value = ''
   avatarUrl.value = ''
+  if (timerActive) {
+    clearInterval(timer)
+    timerActive = false
+  }
 }
-// 组件销毁时清除数据
-import { onBeforeUnmount } from 'vue'
-onBeforeUnmount(() => {
-  resetQrCodeData()
-})
-// 组件挂载时获取二维码
-import { onMounted } from 'vue'
+
 onMounted(() => {
   loginQr()
+})
+
+onBeforeUnmount(() => {
+  resetQrCodeData()
 })
 </script>
 
 <template>
-  <div class="login-container">    
-    <!-- 二维码登录卡片 -->
-    <el-card class="login-card qr-card">
+  <div class="login-container">
+    <el-card class="login-card">
       <template #header>
         <div class="login-title">二维码登录</div>
       </template>
+
       <div class="qr-content">
-        <img v-if="qrImg !== ''" :src="qrImg" class="qr-img" />
-        <div class="qr-status">
-          <p v-if="qrState === 801">请扫描二维码</p>
-          <p v-else-if="qrState === 802">登录待确认</p>
-          <p v-else-if="qrState === 803">登录成功</p>
-          <p v-else>二维码不存在或者已过期</p>
+        <!-- 左边二维码 -->
+        <div>
+          <div v-if="qrImg !== ''">
+            <img :src="qrImg" class="qr-img" />
+          </div>
+          <div v-else class="qr-placeholder">
+            <span>二维码加载中...</span>
+          </div>
         </div>
-        <el-button type="primary" @click="loginQr" :disabled="disableGetQrCode">重新获取二维码</el-button>
+
+        <!-- 右边信息模块 -->
+        <div class="qr-info">
+          <div class="qr-status">
+            <p v-if="qrState === 801">请扫描二维码</p>
+            <p v-else-if="qrState === 802">登录待确认</p>
+            <p v-else-if="qrState === 803">登录成功</p>
+            <p v-else>二维码不存在或者已过期</p>
+          </div>
+          <el-button type="primary" @click="loginQr" :disabled="disableGetQrCode">
+            重新获取二维码
+          </el-button>
+        </div>
       </div>
     </el-card>
   </div>
 </template>
 
 <style scoped>
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 400px;
+  min-height: 270px;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: #f0f2f5;
+}
 
+.login-card {
+  width: 100%;
+  height: 100%;
+  max-width: 400px;
+  background-color: #fff;
+}
+
+.login-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+
+.qr-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.qr-img {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+  border: 1px solid #e4e7ed;
+  border-radius: 8px;
+}
+
+.qr-placeholder {
+  width: 150px;
+  height: 150px;
+  background-color: #f5f7fa;
+  border: 1px dashed #dcdfe6;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 14px;
+}
+
+.qr-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.qr-status {
+  font-size: 14px;
+  color: #666;
+}
+
+/* 响应式支持：手机上切回竖排 */
+/* @media (max-width: 600px) {
+  .qr-content {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .qr-info {
+    align-items: center;
+    text-align: center;
+  }
+} */
 </style>

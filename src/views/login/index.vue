@@ -11,8 +11,9 @@ enum loginMethodEnum {
   accountPassword = 0,
   captcha = 1,
   qrCode = 2,
+  captchaSignUp = 3
 }
-type loginMethodType = 0 | 1 | 2
+type loginMethodType = 0 | 1 | 2 | 3
 const loginMethod = ref<loginMethodType>(0)
 
 // 切换登录方式
@@ -29,6 +30,7 @@ const switchLoginMethod = (index: string) => {
       <el-menu-item index="0"><el-icon><EpUser /></el-icon></el-menu-item>
       <el-menu-item index="1"><el-icon><EpKey /></el-icon></el-menu-item>
       <el-menu-item index="2"><el-icon><EpFullScreen /></el-icon></el-menu-item>
+      <el-menu-item index="3"><el-icon><EpCirclePlusFilled /></el-icon></el-menu-item>
     </el-menu>
 
     <!-- 显示登录组件区域 -->
@@ -36,6 +38,8 @@ const switchLoginMethod = (index: string) => {
       <PwdLogin v-if="loginMethod === loginMethodEnum.accountPassword" />
       <CaptchaLogin v-if="loginMethod === loginMethodEnum.captcha" />
       <QrCodeLogin v-if="loginMethod === loginMethodEnum.qrCode" />
+      <!-- 暂且使用验证码登录组件替代 -->
+      <CaptchaLogin v-if="loginMethod === loginMethodEnum.captchaSignUp" captcha-login-title="手机号码注册" captcha-login-submit-text="注册" />
     </div>
   </div>
 </template>
@@ -44,55 +48,96 @@ const switchLoginMethod = (index: string) => {
 .login-container {
   display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #ffffff;
 }
 
 .login-method-menu {
-  width: 200px;
-  background-color: #2c3e50;
-  padding: 20px;
-  border-radius: 10px;
-  flex-shrink: 0;  /* 防止菜单缩小 */
+  width: 80px;
+  background: linear-gradient(145deg, #2c3e50, #34495e);
+  padding: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 
 .el-menu-item {
-  color: #ecf0f1;
-  font-size: 18px;
-  padding: 10px 20px;
-  border-radius: 5px;
-  transition: background-color 0.3s, color 0.3s;
+  width: 48px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #bdc3c7;
+  border-radius: 8px;
+  margin: 4px 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .el-menu-item:hover {
-  background-color: #3498db;
-  color: #fff;
+  background-color: rgba(52, 152, 219, 0.1);
+  transform: translateY(-2px);
 }
 
 .el-menu-item.is-active {
-  background-color: #2980b9;
+  background-color: #3498db;
   color: #fff;
+  box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);
+}
+
+.el-menu-item .el-icon {
+  font-size: 24px;
 }
 
 .login-content {
-  flex-grow: 1;
-  padding: 20px;
-  overflow-y: auto;
-  min-height: 0; /* 移除固定高度，允许自适应 */
+  flex: 1;
+  width: 400px;
+  height: 270px;
+  position: relative;
 }
 
+/* 响应式设计 */
 @media (max-width: 768px) {
   .login-container {
     flex-direction: column;
+    min-height: auto;
   }
 
   .login-method-menu {
     width: 100%;
-    height: auto;
-    padding: 10px;
+    flex-direction: row;
+    justify-content: center;
+    padding: 12px;
+    border-radius: 0;
+  }
+
+  .el-menu-item {
+    width: 40px;
+    height: 30px;
+    margin: 0 4px;
   }
 
   .login-content {
-    margin-top: 20px;
+    width: 400px;
+    height: 270px;
+  }
+}
+
+@media (max-width: 480px) {
+  .el-menu-item {
+    width: 36px;
+    height: 30px;
+  }
+  
+  .el-menu-item .el-icon {
+    font-size: 20px;
+  }
+  
+  .login-content {
+    width: 360px;
+    height: 270px;
   }
 }
 </style>

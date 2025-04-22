@@ -1,29 +1,36 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
-import { useUserStore } from '@/stores/index'
-
-// 类型
+import { reactive, ref, onMounted } from 'vue'
 import type { FormInstance, FormRules } from 'element-plus'
+import { getPhoneCaptcha, phoneCaptchaLogin } from '@/service/login'
 
-// 接口
-import { getPhoneCaptcha, phoneCaptchaLogin, getLoginStatus } from '@/service/login'
-
-
-// 手机验证码登录数据
+// 数据
+const props = defineProps(
+  {
+    captchaLoginTitle: {
+      type: String,
+      default: '手机验证码登录'
+    },
+    captchaLoginSubmitText: {
+      type: String,
+      default: '登录'
+    }
+  }
+)
 interface loginFormPhoneCaptchaTypes {
   phone: string
   captcha: string
 }
+
 const loginFormPhoneCaptchaRuleFormRef = ref<FormInstance>()
 const loginFormPhoneCaptchaRuleForm = reactive<loginFormPhoneCaptchaTypes>({
   phone: '',
   captcha: ''
 })
-// 防抖
+
 let phoneTimer: ReturnType<typeof setTimeout> | null = null
 let captchaTimer: ReturnType<typeof setTimeout> | null = null
 const timegap = 700
-// 规则定义
+
 const loginFormPhoneCaptchaRules = reactive<FormRules<loginFormPhoneCaptchaTypes>>({
   phone: [
     {
@@ -64,17 +71,31 @@ const loginFormPhoneCaptchaRules = reactive<FormRules<loginFormPhoneCaptchaTypes
     }
   ]
 })
-// 验证码获取
+
+// 倒计时逻辑
+const countdown = ref(0)
+const countdownDuration = 60
+let countdownInterval: ReturnType<typeof setInterval> | null = null
+
+const startCountdown = () => {
+  countdown.value = countdownDuration
+  countdownInterval = setInterval(() => {
+    countdown.value--
+    if (countdown.value <= 0 && countdownInterval) {
+      clearInterval(countdownInterval)
+      countdownInterval = null
+    }
+  }, 1000)
+}
+
 const getCaptcha = async (formEl: FormInstance | undefined) => {
-  console.log('获取验证码')
-  if (!formEl) return
+  if (!formEl || countdown.value > 0) return
   await formEl.validateField('phone', (valid, message) => {
     if (valid) {
-      console.log('手机号合法，可以发送验证码')
-      // TODO: 调用后端接口发送验证码
       getPhoneCaptcha(loginFormPhoneCaptchaRuleForm.phone)
         .then((res) => {
           console.log('验证码发送结果：', res)
+          startCountdown()
         })
         .catch((err) => {
           console.error('验证码发送失败：', err)
@@ -84,15 +105,17 @@ const getCaptcha = async (formEl: FormInstance | undefined) => {
     }
   })
 }
-// 手机验证码登录
+
 const submitPhoneCaptchaForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
-      console.log('submit!')
-      phoneCaptchaLogin(loginFormPhoneCaptchaRuleForm.phone, loginFormPhoneCaptchaRuleForm.captcha)
+      phoneCaptchaLogin(
+        loginFormPhoneCaptchaRuleForm.phone,
+        loginFormPhoneCaptchaRuleForm.captcha
+      )
         .then((res) => {
-          if ((res as any).data?.code !== 200) {
+          if ((res as any).code !== 200) {
             console.error('登录失败：', res)
             return
           }
@@ -107,14 +130,13 @@ const submitPhoneCaptchaForm = async (formEl: FormInstance | undefined) => {
     }
   })
 }
-// 重置手机验证码登录数据
+
 const resetPhoneCaptchaData = () => {
   loginFormPhoneCaptchaRuleForm.phone = ''
   loginFormPhoneCaptchaRuleForm.captcha = ''
   loginFormPhoneCaptchaRuleFormRef.value?.clearValidate()
 }
-// 组件挂载后重置数据
-import { onMounted } from 'vue'
+
 onMounted(() => {
   resetPhoneCaptchaData()
 })
@@ -122,10 +144,9 @@ onMounted(() => {
 
 <template>
   <div class="login-container">
-    <!-- 手机验证码登录卡片 -->
     <el-card class="login-card">
       <template #header>
-        <div class="login-title">手机验证码登录</div>
+        <div class="login-title">{{ captchaLoginTitle }}</div>
       </template>
       <el-form
         ref="loginFormPhoneCaptchaRuleFormRef"
@@ -133,22 +154,77 @@ onMounted(() => {
         :rules="loginFormPhoneCaptchaRules"
         label-width="auto"
         hide-required-asterisk
+        class="login-form"
       >
-        <el-form-item label="手机号:" prop="phone">
+        <el-form-item label="手机号:" prop="phone" class="login-form-item-limit">
           <el-input v-model="loginFormPhoneCaptchaRuleForm.phone" placeholder="请输入手机号" />
         </el-form-item>
-        <el-form-item label="验证码:" prop="captcha" class="captcha-item">
-          <el-input v-model="loginFormPhoneCaptchaRuleForm.captcha" placeholder="请输入验证码" />
-          <el-button class="captcha-btn" @click="getCaptcha(loginFormPhoneCaptchaRuleFormRef)">发送验证码</el-button>
+        <el-form-item label="验证码:" prop="captcha" class="login-form-item-limit">
+          <el-input
+            v-model="loginFormPhoneCaptchaRuleForm.captcha"
+            placeholder="请输入验证码"
+          >
+            <template #append>
+              <el-button
+                :disabled="countdown > 0"
+                @click="getCaptcha(loginFormPhoneCaptchaRuleFormRef)"
+              >
+                {{ countdown > 0 ? `${countdown}秒后重试` : '发送验证码' }}
+              </el-button>
+            </template>
+          </el-input>
         </el-form-item>
       </el-form>
       <div class="login-actions">
-        <el-button type="primary" @click="submitPhoneCaptchaForm(loginFormPhoneCaptchaRuleFormRef)">登录</el-button>
+        <el-button type="primary" @click="submitPhoneCaptchaForm(loginFormPhoneCaptchaRuleFormRef)">
+          {{ captchaLoginSubmitText }}
+        </el-button>
       </div>
     </el-card>
   </div>
 </template>
 
 <style scoped>
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 400px;
+  min-height: 270px;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: #f0f2f5;
+}
 
+.login-card {
+  width: 100%;
+  height: 100%;
+  max-width: 400px;
+  background-color: #fff;
+}
+
+.login-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+}
+
+.login-form {
+  margin-top: 20px;
+}
+
+.login-form-item-limit {
+  max-width: 280px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.login-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
 </style>
