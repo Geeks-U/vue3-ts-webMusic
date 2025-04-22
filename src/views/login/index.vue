@@ -56,7 +56,7 @@ const switchLoginMethod = (index: string) => {
 
 .login-method-menu {
   width: 80px;
-  background: linear-gradient(145deg, #2c3e50, #34495e);
+  background: linear-gradient(145deg, #7d8fa1, #717b85);
   padding: 20px 0;
   display: flex;
   flex-direction: column;
@@ -82,7 +82,7 @@ const switchLoginMethod = (index: string) => {
 }
 
 .el-menu-item.is-active {
-  background-color: #3498db;
+  background-color: #4f7086;
   color: #fff;
   box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);
 }
