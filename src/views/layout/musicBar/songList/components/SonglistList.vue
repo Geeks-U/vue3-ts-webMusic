@@ -1,12 +1,12 @@
 <script setup lang="ts">
 
-
 type SonglistItemType = {
-  id: number;
-  name: string;
-  picUrl: string;
-  playCount: number;
-};
+  id: number
+  name: string
+  coverImgUrl: string
+  playCount: number
+  creator: {userId:number, nickname:string}
+}
 
 const props = defineProps({
   songlistList: {
@@ -23,14 +23,17 @@ const props = defineProps({
     <div v-for="item in songlistList" :key="item.id" class="songlist-item">
       <!-- 上侧封面 -->
       <div class="image-container">
-        <img :src="item.picUrl" class="image-container-image">
+        <img :src="item.coverImgUrl" class="image-container-image">
         <div class="image-container-text">
           <el-icon><EpHeadset /></el-icon>
           <span>{{ (item.playCount / 10000).toFixed(1) + "万" }}</span>
         </div>
       </div>
       <!-- 下侧描述 -->
-      <div><span>{{ item.name }}</span></div>
+      <div class="songlist-item-info">
+        <p class="songlist-name" :title="item.name">{{ item.name }}</p>
+        <p class="songlist-creator">{{ item.creator.nickname }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -88,13 +91,28 @@ const props = defineProps({
 }
 
 /* 底部名称显示策略 */
-.songlist-item > div:last-child {
+.songlist-item-info {
   padding: 8px;
-  font-size: 14px;
   color: #333;
+  display: flex;
+  flex-direction: column;
+}
+
+.songlist-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-top: 2px;
+  margin-bottom: 2px;
 }
 
+.songlist-creator {
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
 </style>    

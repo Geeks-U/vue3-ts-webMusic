@@ -41,6 +41,12 @@ const props = defineProps({
   border: 1px solid #eee;
   border-radius: 8px;
   background-color: #fafafa;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.song-item:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .song-img {

@@ -45,6 +45,12 @@ const props = defineProps({
   width: 360px;
   display: flex;
   flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* 添加过渡效果 */
+}
+
+.mv-item:hover {
+  transform: scale(1.05); /* 鼠标悬停时放大 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 鼠标悬停时添加阴影 */
 }
 
 .mv-image-wrapper {
