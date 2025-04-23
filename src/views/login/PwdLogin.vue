@@ -116,7 +116,7 @@ onMounted(() => {
         </el-form-item>
       </el-form>
       <div class="login-actions">
-        <el-button type="primary" @click="submitForm(loginFormRef)">登录</el-button>
+        <el-button class="login-actions-submitButton" @click="submitForm(loginFormRef)">登录</el-button>
       </div>
     </el-card>
   </div>
@@ -163,5 +163,16 @@ onMounted(() => {
   margin-top: 20px;
   display: flex;
   justify-content: center;
+}
+
+.login-actions-submitButton {
+  width: 30%;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.login-actions-submitButton:active {
+  background-color: #899aac;
+  color: #fff;
 }
 </style>

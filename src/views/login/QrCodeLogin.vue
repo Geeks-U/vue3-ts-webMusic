@@ -2,6 +2,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useUserStore } from '@/stores/index'
 import { getQrKey, getQrCode, checkQrCodeState, getLoginStatus } from '@/service/login'
+import router from '@/router'
 
 const qrKey = ref('')
 const qrImg = ref('')
@@ -42,9 +43,23 @@ const loginQr = () => {
             timerActive = true
           }
         })
-        .catch(console.log)
+        .catch((err) => {
+          console.log(err)
+          ElMessage({
+            message: '获取二维码失败，请稍后再试.',
+            type: 'error',
+            plain: true,
+          })
+        })
     })
-    .catch(console.log)
+    .catch((err) => {
+      console.log(err)
+      ElMessage({
+        message: '获取二维码key失败，请稍后再试.',
+        type: 'error',
+        plain: true,
+      })
+    })
 }
 
 const getQrState = () => {
@@ -65,7 +80,12 @@ const getQrState = () => {
         getLoginStatus(cookie.value)
           .then((res) => {
             userStore.setUserInfo(res.data.account, res.data.profile, true)
-            console.log('登录成功，跳转至首页')
+            ElMessage({
+              message: '登录成功.',
+              type: 'success',
+              plain: true,
+            })
+            router.push('/')
           })
           .catch(console.log)
       }
@@ -104,7 +124,7 @@ onBeforeUnmount(() => {
 
       <div class="qr-content">
         <!-- 左边二维码 -->
-        <div>
+        <div class="qr-img-container">
           <div v-if="qrImg !== ''">
             <img :src="qrImg" class="qr-img" />
           </div>
@@ -121,7 +141,7 @@ onBeforeUnmount(() => {
             <p v-else-if="qrState === 803">登录成功</p>
             <p v-else>二维码不存在或者已过期</p>
           </div>
-          <el-button type="primary" @click="loginQr" :disabled="disableGetQrCode">
+          <el-button class="qr-info-getQrCodeButton" @click="loginQr" :disabled="disableGetQrCode">
             重新获取二维码
           </el-button>
         </div>
@@ -164,17 +184,30 @@ onBeforeUnmount(() => {
   gap: 20px;
 }
 
+.qr-img-container {
+  width: 154px;
+  height: 154px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
 .qr-img {
-  width: 150px;
-  height: 150px;
+  width: 110px;
+  height: 110px;
+  margin-left: auto;
+  margin-right: auto;
   object-fit: contain;
   border: 1px solid #e4e7ed;
   border-radius: 8px;
 }
 
 .qr-placeholder {
-  width: 150px;
-  height: 150px;
+  width: 110px;
+  height: 110px;
+  margin-left: auto;
+  margin-right: auto;
   background-color: #f5f7fa;
   border: 1px dashed #dcdfe6;
   border-radius: 8px;
@@ -196,6 +229,20 @@ onBeforeUnmount(() => {
 .qr-status {
   font-size: 14px;
   color: #666;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.qr-info-getQrCodeButton {
+  width: 70%;
+  min-width: 130px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.qr-info-getQrCodeButton:active {
+  background-color: #b2beca;
+  color: #fff;
 }
 
 /* 响应式支持：手机上切回竖排 */

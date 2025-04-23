@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import './style.css'  // 引入根组件样式
+// import './style.css'  // 引入根组件样式
 import App from './App.vue'  // 引入根组件
 import router from './router/index'  // 引入路由
 import { createPinia } from 'pinia'  // 引入 Pinia

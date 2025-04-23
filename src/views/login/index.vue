@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 
 // 登录方式组件
+// 假设这些组件存在，实际使用时需要确保路径正确
 import PwdLogin from './PwdLogin.vue'
 import CaptchaLogin from './CaptchaLogin.vue'
 import QrCodeLogin from './QrCodeLogin.vue'
@@ -96,6 +97,9 @@ const switchLoginMethod = (index: string) => {
   width: 400px;
   height: 270px;
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* 响应式设计 */
@@ -122,6 +126,9 @@ const switchLoginMethod = (index: string) => {
   .login-content {
     width: 400px;
     height: 270px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 
@@ -138,6 +145,9 @@ const switchLoginMethod = (index: string) => {
   .login-content {
     width: 360px;
     height: 270px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 </style>

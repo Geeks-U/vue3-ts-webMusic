@@ -98,7 +98,11 @@ const getCaptcha = async (formEl: FormInstance | undefined) => {
           startCountdown()
         })
         .catch((err) => {
-          console.error('验证码发送失败：', err)
+          ElMessage({
+            message: '验证码发送失败.',
+            type: 'error',
+            plain: true,
+          })
         })
     } else {
       console.log('手机号不合法', message)
@@ -119,7 +123,11 @@ const submitPhoneCaptchaForm = async (formEl: FormInstance | undefined) => {
             console.error('登录失败：', res)
             return
           }
-          console.log('登录成功，跳转首页')
+          ElMessage({
+            message: props.captchaLoginTitle + '成功.',
+            type: 'success',
+            plain: true,
+          })
           resetPhoneCaptchaData()
         })
         .catch((err) => {
@@ -176,7 +184,7 @@ onMounted(() => {
         </el-form-item>
       </el-form>
       <div class="login-actions">
-        <el-button type="primary" @click="submitPhoneCaptchaForm(loginFormPhoneCaptchaRuleFormRef)">
+        <el-button class="login-actions-submitButton" @click="submitPhoneCaptchaForm(loginFormPhoneCaptchaRuleFormRef)">
           {{ captchaLoginSubmitText }}
         </el-button>
       </div>
@@ -225,5 +233,16 @@ onMounted(() => {
   margin-top: 20px;
   display: flex;
   justify-content: center;
+}
+
+.login-actions-submitButton {
+  width: 30%;
+  max-width: 280px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.login-actions-submitButton:active {
+  background-color: #b2beca;
+  color: #fff;
 }
 </style>

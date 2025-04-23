@@ -44,7 +44,7 @@ instance.interceptors.response.use(
         console.error('发生了未知错误')
       }
     }
-    return Promise.reject(error.response.data)
+    return Promise.reject(error.response)
   }
 )
 
