@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue'
-import { useUserStore } from '@/stores/index'
 import type { FormInstance, FormRules } from 'element-plus'
-import { accountPwdLogin, getLoginStatus } from '@/service/login'
+import { accountPwdLogin } from '@/service/login'
 
 interface LoginForm {
   username: string
@@ -24,7 +23,7 @@ const loginRules = reactive<FormRules<LoginForm>>({
   username: [
     {
       required: true,
-      validator: (rule, value, callback) => {
+      validator: (_, value, callback) => {
         if (usernameTimer) clearTimeout(usernameTimer)
         usernameTimer = setTimeout(() => {
           const regex = /^1[3-9]\d{9}$/
@@ -43,7 +42,7 @@ const loginRules = reactive<FormRules<LoginForm>>({
   password: [
     {
       required: true,
-      validator: (rule, value, callback) => {
+      validator: (_, value, callback) => {
         if (passwordTimer) clearTimeout(passwordTimer)
         passwordTimer = setTimeout(() => {
           const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d\W_]{8,20}$/

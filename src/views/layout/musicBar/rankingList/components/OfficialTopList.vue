@@ -7,12 +7,17 @@ type OfficialTopListItemType = {
   tracks: Array<{ first: string, second: string }>
 }
 
-const props = defineProps({
+defineProps({
   officialTopList: {
     type: Array as () => OfficialTopListItemType[],
     default: () => []
   }
 })
+
+// 截断文字工具函数
+function truncate(str: string, maxLength: number) {
+  return str.length > maxLength ? str.slice(0, maxLength) + '…' : str
+}
 </script>
 
 <template>
@@ -30,7 +35,7 @@ const props = defineProps({
       <div class="info-box">
         <div class="title">{{ item.name }}</div>
         <div class="track" v-for="(track, index) in item.tracks.slice(0, 3)" :key="index">
-          {{ index + 1 }}. {{ track.first }} - {{ track.second }}
+          {{ index + 1 }}. {{ truncate(track.first + ' - ' + track.second, 18) }}
         </div>
       </div>
     </div>
@@ -48,6 +53,7 @@ const props = defineProps({
 .toplist-item {
   display: flex;
   width: 23%;
+  height: 120px;
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
@@ -89,15 +95,23 @@ const props = defineProps({
   display: flex;
   flex-direction: column;
   justify-content: center;
+  overflow: hidden;
 }
 .title {
   font-weight: bold;
   font-size: 16px;
   margin-bottom: 8px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 .track {
   font-size: 14px;
   color: #555;
   margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 </style>

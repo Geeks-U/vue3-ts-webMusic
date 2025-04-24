@@ -7,7 +7,7 @@ import router from '@/router'
 const qrKey = ref('')
 const qrImg = ref('')
 const qrState = ref(800)
-let timer: number
+let timer:any
 let timerActive = false
 
 const cookie = ref('')

@@ -35,7 +35,7 @@ const loginFormPhoneCaptchaRules = reactive<FormRules<loginFormPhoneCaptchaTypes
   phone: [
     {
       required: true,
-      validator: (rule, value, callback) => {
+      validator: (_, value, callback) => {
         if (phoneTimer) clearTimeout(phoneTimer)
         phoneTimer = setTimeout(() => {
           const regex = /^1[3-9]\d{9}$/
@@ -54,7 +54,7 @@ const loginFormPhoneCaptchaRules = reactive<FormRules<loginFormPhoneCaptchaTypes
   captcha: [
     {
       required: true,
-      validator: (rule, value, callback) => {
+      validator: (_, value, callback) => {
         if (captchaTimer) clearTimeout(captchaTimer)
         captchaTimer = setTimeout(() => {
           const regex = /^\d{4,8}$/
@@ -97,7 +97,7 @@ const getCaptcha = async (formEl: FormInstance | undefined) => {
           console.log('验证码发送结果：', res)
           startCountdown()
         })
-        .catch((err) => {
+        .catch((_) => {
           ElMessage({
             message: '验证码发送失败.',
             type: 'error',

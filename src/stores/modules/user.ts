@@ -38,6 +38,12 @@ export const useUserStore = defineStore('user', () => {
 
   const isLogin = ref<boolean>(false)
 
+  const musicPlaylist = ref<number[]>([])
+  if (musicPlaylist.value.length === 0){
+    musicPlaylist.value.push(2687364563)
+    musicPlaylist.value.push(33894312)
+  }
+
   // 使用泛型函数来更新对象属性(浅拷贝)
   function safeUpdate<T extends object>(target: T, source: T) {
     const keys = Object.keys(target) as (keyof T)[]
@@ -56,6 +62,14 @@ export const useUserStore = defineStore('user', () => {
     cookie.value = cookieParam
   }
 
+  function addMusic(id:number){
+    musicPlaylist.value.push(id)
+  }
+
+  function removeMusic(id: number){
+    musicPlaylist.value = musicPlaylist.value.filter(value => value!== id)
+  }
+
   function removeAll() {
     account.value = {
       id: null,
@@ -72,6 +86,7 @@ export const useUserStore = defineStore('user', () => {
       city: null,
     }
     cookie.value = ''
+    musicPlaylist.value = []
   }
 
   return {
@@ -79,8 +94,11 @@ export const useUserStore = defineStore('user', () => {
     profile,
     cookie,
     isLogin,
+    musicPlaylist,
     setUserInfo,
     setCookie,
+    addMusic,
+    removeMusic,
     removeAll,
   }
 }, {

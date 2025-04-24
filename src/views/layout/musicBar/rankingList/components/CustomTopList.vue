@@ -5,7 +5,7 @@ type CustomTopListItemType = {
   coverImgUrl: string
 }
 
-const props = defineProps({
+defineProps({
   customTopList: {
     type: Array as () => CustomTopListItemType[],
     default: () => []

@@ -3,8 +3,8 @@
 </script>
 
 <template>
-  <div>
-    <div>
+  <div class="main-container">
+    <div class="menu-container">
       <el-menu router default-active="/home/musicBar" mode="horizontal">
         <el-menu-item index="/home/musicBar/selectedContent">精选</el-menu-item>
         <el-menu-item index="/home/musicBar/rankingList">歌单排行</el-menu-item>
@@ -14,11 +14,39 @@
         <el-menu-item index="/home/musicBar/broadcastChannel">有声电台</el-menu-item>
       </el-menu>
     </div>
-    <div>
+    <div class="view-container">
       <router-view></router-view>
     </div>
   </div>
 </template>
-<style scoped>
 
+<style scoped>
+.main-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.menu-container {
+  background-color: #333;
+  color: white;
+}
+
+.el-menu {
+  border-bottom: none;
+}
+
+.el-menu-item {
+  transition: background-color 0.3s ease;
+}
+
+.el-menu-item:hover {
+  background-color: #555;
+}
+
+.view-container {
+  flex: 1;
+  padding: 20px;
+  background-color: #f4f4f4;
+}
 </style>

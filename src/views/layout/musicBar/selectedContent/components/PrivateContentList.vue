@@ -5,7 +5,7 @@ type PrivateContentListItemType = {
   picUrl: string
 }
 
-const props = defineProps({
+defineProps({
   privateContentList: {
     type: Array as () => PrivateContentListItemType[],
     default: () => []

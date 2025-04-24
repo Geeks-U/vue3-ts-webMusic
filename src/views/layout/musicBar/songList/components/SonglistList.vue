@@ -8,7 +8,7 @@ type SonglistItemType = {
   creator: {userId:number, nickname:string}
 }
 
-const props = defineProps({
+defineProps({
   songlistList: {
     type: Array as () => SonglistItemType[],
     default: () => []

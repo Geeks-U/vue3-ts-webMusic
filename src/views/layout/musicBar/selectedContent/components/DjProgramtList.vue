@@ -5,7 +5,7 @@ type DjProgramtListItemType = {
   picUrl: string
 }
 
-const props = defineProps({
+defineProps({
   djProgramList: {
     type: Array as () => DjProgramtListItemType[],
     default: () => []

@@ -8,7 +8,7 @@ type MVItemType = {
   playCount: number
 }
 
-const props = defineProps({
+defineProps({
   mvList: {
     type: Array as () => MVItemType[],
     default: () => []

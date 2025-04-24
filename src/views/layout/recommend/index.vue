@@ -119,6 +119,7 @@ onBeforeMount(() => {
   <div>
     <!-- 轮播图 -->
     <div>
+      <h1>近期活动</h1>
       <Banner :img-list="bannerList"></Banner>
     </div>
     <!-- 推荐歌单 -->
@@ -128,12 +129,12 @@ onBeforeMount(() => {
     </div>
     <!-- 推荐音乐 -->
     <div>
-      <h1>音乐</h1>
+      <h1>专属音乐</h1>
       <SongList :songlist="songList"></SongList>
     </div>
     <!-- 推荐MV -->
     <div>
-      <h1>MV</h1>
+      <h1>推荐MV</h1>
       <MvList :mv-list="mvList"></MvList>
     </div>
   </div>

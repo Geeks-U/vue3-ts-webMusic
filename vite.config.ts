@@ -9,23 +9,15 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [
-    // 解析vue文件
     vue(),
 
-    // 实现组件的自动导入(在使用到的地方自动导入)
+    // 自动导入插件
     AutoImport({
       dts: 'src/auto-imports.d.ts',
-      resolvers: [
-        ElementPlusResolver({
-          importStyle: 'css'
-        }),
-        IconsResolver({
-          prefix: 'Icon'
-        }),
-      ],
+      resolvers: [],
     }),
 
-    // 实现组件的自动注册(按需加载)
+    // 自动注册组件插件
     Components({
       dts: 'src/components.d.ts',
       resolvers: [
@@ -33,13 +25,13 @@ export default defineConfig({
           importStyle: 'css'
         }),
         IconsResolver({
-          enabledCollections: ['ep'],
+          enabledCollections: ['mdi', 'fa', 'ep'], // 启用更多的图标库
           prefix: '',
         }),
       ],
     }),
 
-    // icon组件生成
+    // 配置图标插件
     Icons({
       autoInstall: true,
     }),

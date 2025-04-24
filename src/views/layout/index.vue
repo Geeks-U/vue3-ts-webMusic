@@ -1,10 +1,60 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import { useUserStore } from '@/stores/index'
 
-// 模拟数据
+// 组件导入
+import MusicPlayer from './components/MusicPlayer.vue'
+
+// 接口
+import { GetSongPlayurl, GetSongDetails } from '@/service/layout'
+
+// 数据
 const userStore = useUserStore()
 const searchInput = ref('')
+type MusicItemType = {
+  musicId: number
+  musicName: string
+  musicUrl: string
+  musicCoverImg: string
+  musicAuthorId: number
+  musicAuthorName: string
+  collected: boolean
+}
+// 音乐id
+const musicIds = userStore.musicPlaylist
+const musicList = ref<MusicItemType[]>([])
+const getSongInfo = (ids:number[]) => {
+  let tempList:MusicItemType[] = []
+  GetSongPlayurl(ids)
+    .then((res_one:any) => {
+      GetSongDetails(ids)
+        .then((res_two:any) => {
+          for (let index = 0; index < ids.length; index++) {
+            tempList.push({
+              musicId: res_one.data[index].id,
+              musicUrl: res_one.data[index].url,
+              musicName: res_two.songs[index].al.name,
+              musicCoverImg: res_two.songs[index].al.picUrl,
+              musicAuthorId: res_two.songs[index].ar[0].id,
+              musicAuthorName: res_two.songs[index].ar[0].name,
+              collected: false
+            })
+          }
+          musicList.value = tempList
+        })
+        .catch((res) => {
+          console.log('GetSongDetails: ', res)
+        })
+    })
+    .catch((res) => {
+      console.log('GetSongPlayurl: ', res)
+    })
+}
+
+onBeforeMount(() => {
+  // 获取播放列表数据
+  getSongInfo(musicIds)
+})
 
 </script>
 
@@ -45,6 +95,10 @@ const searchInput = ref('')
       <div class="main-content">
         <router-view></router-view>
       </div>
+      <!-- 底部播放器 数据获取之后再渲染 -->
+      <div class="bottom-player" v-if="musicList.length!==0">
+        <MusicPlayer :song-list="musicList"></MusicPlayer>
+      </div>
     </div>
   </div>
 </template>
@@ -54,10 +108,12 @@ const searchInput = ref('')
   display: flex;
   min-height: 100vh;
   background: #f5f5f5;
+  /* --left-menu-width-percentage: 7%; 定义左侧菜单宽度百分比的 CSS 变量 */
+  --left-menu-min-width: 120px; /* 定义左侧菜单最小宽度的 CSS 变量 */
 }
 
 .left-menu {
-  width: 240px;
+  width: var(--left-menu-min-width); /* 使用 max 函数确保宽度不小于最小宽度 */
   background: #fff;
   box-shadow: 2px 0 8px rgba(0,0,0,0.05);
 }
@@ -92,6 +148,9 @@ const searchInput = ref('')
 .right-content {
   flex: 1;
   min-width: 0;
+  background: #ffffff;
+  width: 100vw - var(--left-menu-min-width);
+  position: relative; /* 为了让主要内容在底部播放器上方 */
 }
 
 .top-bar {
@@ -121,9 +180,9 @@ const searchInput = ref('')
 }
 
 .main-content {
-  padding: 24px;
+  /* padding: 13px; */
   background: #fff;
   border-radius: 8px;
-  min-height: calc(100vh - 120px);
+  min-height: calc(100vh - 120px); /* 调整高度以适应底部播放器 */
 }
-</style>
+</style>    

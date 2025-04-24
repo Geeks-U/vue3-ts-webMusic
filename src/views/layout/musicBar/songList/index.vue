@@ -109,14 +109,16 @@ const getMoreSonglistList = () => {
   <div>
     <!-- 标签选择区域 -->
     <div class="tag-selector">
-      <el-radio-group v-model="selectedTag">
-        <el-radio-button
+      <div class="tag-buttons">
+        <button
           v-for="(item, index) in tagList"
           :key="index"
-          :label="item.name"
-          :value="item.name"
-        />
-      </el-radio-group>
+          :class="['tag-button', { active: item.name === selectedTag }]"
+          @click="selectedTag = item.name"
+        >
+          {{ item.name }}
+        </button>
+      </div>
     </div>
 
     <!-- 歌单列表 -->
@@ -132,47 +134,43 @@ const getMoreSonglistList = () => {
   </div>
 </template>
 
+
 <style scoped>
-/* 标签选择区域样式优化 */
 .tag-selector {
   margin: 24px 0;
-  display: flex;
-  justify-content: center;
 }
 
-/* 让 el-radio-group 内部灵活换行且居中 */
-.el-radio-group {
+.tag-buttons {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 6px;
 }
 
-/* 美化按钮本体 */
-.el-radio-button {
-  border-radius: 20px;
-  overflow: hidden;
+.tag-button {
+  border-radius: 6px;
+  background-color: #e0e0e0;
+  color: #424447;
+  font-size: 15px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 130px;
+  width: 9%; /* 固定按钮宽度 */
+  text-align: center; /* 文本居中 */
 }
 
-/* 默认状态按钮 */
-.el-radio-button__inner {
-  padding: 6px 18px;
-  border-radius: 20px;
-  background-color: #f5f7fa;
-  color: #606266;
-  font-size: 14px;
-  transition: all 0.3s;
+.tag-button:hover {
+  background-color: #d0d0d0;
+  color: #2d8cf0;
+  transform: translateY(-2px);
 }
 
-/* 选中状态按钮 */
-.el-radio-button__orig-radio:checked + .el-radio-button__inner {
-  background-color: #409EFF;
+.tag-button.active {
+  background-color: #2d8cf0;
   color: #fff;
-  box-shadow: 0 2px 8px rgba(64, 158, 255, 0.4);
+  box-shadow: 0 4px 8px rgba(45, 140, 240, 0.4);
+  transform: scale(1.05);
 }
 
-/* hover效果 */
-.el-radio-button__inner:hover {
-  background-color: #e0ecff;
-  color: #409EFF;
-}
-</style>
+</style>    

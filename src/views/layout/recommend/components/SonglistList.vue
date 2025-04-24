@@ -8,7 +8,7 @@ type SonglistItemType = {
   playCount: number;
 };
 
-const props = defineProps({
+defineProps({
   songlistList: {
     type: Array as () => SonglistItemType[],
     default: () => []

@@ -5,7 +5,7 @@ type ArtistListItemType = {
   picUrl: string
 }
 
-const props = defineProps({
+defineProps({
   artistList: {
     type: Array as () => ArtistListItemType[],
     default: () => []
