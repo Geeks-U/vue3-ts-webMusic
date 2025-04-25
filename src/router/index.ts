@@ -73,6 +73,11 @@ const routes = [
         path: 'radioStation',
         name: 'RadioStation',
         component: () => import('@/views/layout/radioStaion/index.vue'), // 懒加载组件
+      },
+      {
+        path: 'songlist/:id',
+        name: 'Songlist',
+        component: () => import('@/views/layout/Songlist/index.vue'), // 懒加载组件
       }
     ]
   }

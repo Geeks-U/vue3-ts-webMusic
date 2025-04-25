@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref, watch } from 'vue'
 import { useUserStore } from '@/stores/index'
+import router from '@/router'
 
 // 组件导入
 import MusicPlayer from './components/MusicPlayer.vue'
@@ -9,6 +10,7 @@ import MusicPlayer from './components/MusicPlayer.vue'
 import { GetSongPlayurl, GetSongDetails } from '@/service/layout'
 
 // 数据
+const isPlayMusic = ref(false)
 const userStore = useUserStore()
 const searchInput = ref('')
 type MusicItemType = {
@@ -21,9 +23,8 @@ type MusicItemType = {
   collected: boolean
 }
 // 音乐id
-const musicIds = userStore.musicPlaylist
 const musicList = ref<MusicItemType[]>([])
-const getSongInfo = (ids:number[]) => {
+const getSongInfo = (ids:number[], method?: Function) => {
   let tempList:MusicItemType[] = []
   GetSongPlayurl(ids)
     .then((res_one:any) => {
@@ -42,6 +43,10 @@ const getSongInfo = (ids:number[]) => {
           }
           musicList.value = tempList
         })
+        .then(() => {
+          // 是否立即播放 等待歌曲数据加载
+          if (method) setTimeout(method(), 1000)
+        })
         .catch((res) => {
           console.log('GetSongDetails: ', res)
         })
@@ -53,7 +58,11 @@ const getSongInfo = (ids:number[]) => {
 
 onBeforeMount(() => {
   // 获取播放列表数据
-  getSongInfo(musicIds)
+  getSongInfo(userStore.musicPlaylist)
+  // 监听id列表的变化
+  watch(() => userStore.musicPlaylist, (newValue) => {
+    getSongInfo(newValue, () => { isPlayMusic.value = !isPlayMusic.value })
+  })
 })
 
 </script>
@@ -86,9 +95,15 @@ onBeforeMount(() => {
         </el-input>
         
         <div class="user-info">
-          <el-avatar :size="32" :src="userStore.profile.avatarUrl" />
-          <span>{{ userStore.profile.nickname }}</span>
+          <template v-if="userStore.profile.avatarUrl !== ''">
+            <el-avatar class="user-avatar" :size="32" :src="userStore.profile.avatarUrl" />
+            <span class="user-nickname">{{ userStore.profile.nickname }}</span>
+          </template>
+          <template v-else>
+            <button class="login-button" @click="router.push('/login')">登录</button>
+          </template>
         </div>
+
       </div>
 
       <!-- 主要内容 -->
@@ -97,7 +112,7 @@ onBeforeMount(() => {
       </div>
       <!-- 底部播放器 数据获取之后再渲染 -->
       <div class="bottom-player" v-if="musicList.length!==0">
-        <MusicPlayer :song-list="musicList"></MusicPlayer>
+        <MusicPlayer :song-list="musicList" :play="isPlayMusic" ></MusicPlayer>
       </div>
     </div>
   </div>
@@ -162,7 +177,12 @@ onBeforeMount(() => {
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
+.search-input {
+  width: 20%; /* 控制 el-input 根元素宽度 */
+}
+
 .search-input :deep(.el-input__wrapper) {
+  width: 100%; /* 让 wrapper 填满 el-input 宽度 */
   border-radius: 20px;
   background: #f5f5f5;
   box-shadow: none;
@@ -172,11 +192,31 @@ onBeforeMount(() => {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.user-info span {
   font-size: 14px;
   color: #333;
+}
+
+.user-avatar {
+  border: 1px solid #eee;
+}
+
+.user-nickname {
+  font-weight: 500;
+}
+
+.login-button {
+  padding: 6px 16px;
+  font-size: 14px;
+  color: #409eff;
+  background-color: transparent;
+  border: 1px solid #409eff;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: #ecf5ff;
 }
 
 .main-content {

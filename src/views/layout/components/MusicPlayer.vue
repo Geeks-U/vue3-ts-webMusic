@@ -22,6 +22,10 @@ const props = defineProps({
   songList: {
     type: Array as () => SongItemType[],
     default: []
+  },
+  // 发生变化表示父组件调用播放函数
+  play: {
+    type: Boolean
   }
 })
 
@@ -73,6 +77,13 @@ onMounted(() => {
     } else {
       console.error('Audio error: Unknown error')
     }
+  })
+
+  // 监听父组件是否要求播放(点击歌单全部播放从头播放)
+  watch(() => props.play, () => {
+    if (myAudio.value) myAudio.value.src = props.songList[0].musicUrl
+    playAudioState.value.urlIndex = 0
+    playMusic()
   })
 })
 function getAudioErrorMessage(code: number): string {
@@ -167,6 +178,11 @@ const playMusic = () => {
     })
   }
 }
+
+// 使用 defineExpose 暴露方法给父组件
+defineExpose({
+  playMusic
+})
 
 // 收藏状态切换
 const toggleCollectState = () => {
@@ -318,7 +334,11 @@ const rightSongPlaylist = ref(false)
         <button class="close-btn" @click="rightSongPlaylist = false">关闭</button>
         <p>🎵 歌曲列表：</p>
         <ul>
-          <li v-for="(song, index) in songList" :key="song.musicId" @click="switchMusic(index)">
+          <li v-for="(song, index) in songList"
+            :key="song.musicId"
+            @click="switchMusic(index)"
+            :class="{ active: index === playAudioState.urlIndex }"
+          >
             {{ index + 1 }}. {{ song.musicName }} - {{ song.musicAuthorName }}
           </li>
         </ul>
@@ -385,7 +405,7 @@ const rightSongPlaylist = ref(false)
 /* 歌曲信息 */
 .player-info {
   display: flex;
-  width: 50%;
+  width: 70%;
   flex-direction: column;
   align-items: flex-start;
   gap: 4px;
@@ -475,15 +495,16 @@ const rightSongPlaylist = ref(false)
 }
 
 .drawer-right {
-  position: absolute;
-  top: 0;
+  position: fixed;
   right: 0;
-  width: 15%;
-  height: 100%;
+  top: 0;
+  height: 100vh;
+  width: 300px;
   background-color: white;
-  animation: slideLeft 0.3s ease-out forwards;
-  padding: 20px;
-  box-sizing: border-box;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  overflow-y: auto; /* 支持滚动 */
+  z-index: 999;
 }
 
 /* 抽屉内容 */
@@ -507,6 +528,12 @@ const rightSongPlaylist = ref(false)
 }
 .drawer-right li:hover {
   background-color: #f0f0f0;
+}
+
+.drawer-right li.active {
+  background-color: #e6f7ff;
+  font-weight: bold;
+  color: #409eff;
 }
 
 /* 关闭按钮 */

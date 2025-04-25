@@ -62,11 +62,19 @@ export const useUserStore = defineStore('user', () => {
     cookie.value = cookieParam
   }
 
-  function addMusic(id:number){
-    musicPlaylist.value.push(id)
+  function addMusic(id: number | number[]) {
+    if (typeof id === 'number') {
+      musicPlaylist.value.push(id)
+    } else if (Array.isArray(id)) {
+      musicPlaylist.value.push(...id)  // 展开数组并添加所有元素
+    }
   }
 
   function removeMusic(id: number){
+    if (id === -1){ // id=-1则清除所有数据
+      musicPlaylist.value = []
+      return
+    }
     musicPlaylist.value = musicPlaylist.value.filter(value => value!== id)
   }
 

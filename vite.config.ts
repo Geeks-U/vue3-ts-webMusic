@@ -14,7 +14,12 @@ export default defineConfig({
     // 自动导入插件
     AutoImport({
       dts: 'src/auto-imports.d.ts',
-      resolvers: [],
+      resolvers: [
+        // ElMessage函数导入
+        ElementPlusResolver({
+          importStyle: 'css'
+        }),
+      ],
     }),
 
     // 自动注册组件插件

@@ -25,27 +25,36 @@ const switchLoginMethod = (index: string) => {
 </script>
 
 <template>
-  <div class="login-container">
-    <!-- 顶部菜单 -->
-    <el-menu :default-active="loginMethod.toString()" mode="vertical" class="login-method-menu" @select="switchLoginMethod">
-      <el-menu-item index="0"><el-icon><EpUser /></el-icon></el-menu-item>
-      <el-menu-item index="1"><el-icon><EpKey /></el-icon></el-menu-item>
-      <el-menu-item index="2"><el-icon><EpFullScreen /></el-icon></el-menu-item>
-      <el-menu-item index="3"><el-icon><EpCirclePlusFilled /></el-icon></el-menu-item>
-    </el-menu>
+  <div class="screen-center">
+    <div class="login-container">
+      <!-- 顶部菜单 -->
+      <el-menu :default-active="loginMethod.toString()" mode="vertical" class="login-method-menu" @select="switchLoginMethod">
+        <el-menu-item index="0"><el-icon><EpUser /></el-icon></el-menu-item>
+        <el-menu-item index="1"><el-icon><EpKey /></el-icon></el-menu-item>
+        <el-menu-item index="2"><el-icon><EpFullScreen /></el-icon></el-menu-item>
+        <el-menu-item index="3"><el-icon><EpCirclePlusFilled /></el-icon></el-menu-item>
+      </el-menu>
 
-    <!-- 显示登录组件区域 -->
-    <div class="login-content">
-      <PwdLogin v-if="loginMethod === loginMethodEnum.accountPassword" />
-      <CaptchaLogin v-if="loginMethod === loginMethodEnum.captcha" />
-      <QrCodeLogin v-if="loginMethod === loginMethodEnum.qrCode" />
-      <!-- 暂且使用验证码登录组件替代 -->
-      <CaptchaLogin v-if="loginMethod === loginMethodEnum.captchaSignUp" captcha-login-title="手机号码注册" captcha-login-submit-text="注册" />
+      <!-- 显示登录组件区域 -->
+      <div class="login-content">
+        <PwdLogin v-if="loginMethod === loginMethodEnum.accountPassword" />
+        <CaptchaLogin v-if="loginMethod === loginMethodEnum.captcha" />
+        <QrCodeLogin v-if="loginMethod === loginMethodEnum.qrCode" />
+        <!-- 暂且使用验证码登录组件替代 -->
+        <CaptchaLogin v-if="loginMethod === loginMethodEnum.captchaSignUp" captcha-login-title="手机号码注册" captcha-login-submit-text="注册" />
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.screen-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
 .login-container {
   display: flex;
   flex-direction: row;
@@ -94,8 +103,6 @@ const switchLoginMethod = (index: string) => {
 
 .login-content {
   flex: 1;
-  width: 400px;
-  height: 270px;
   position: relative;
   display: flex;
   justify-content: center;
@@ -124,8 +131,6 @@ const switchLoginMethod = (index: string) => {
   }
 
   .login-content {
-    width: 400px;
-    height: 270px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -143,8 +148,6 @@ const switchLoginMethod = (index: string) => {
   }
   
   .login-content {
-    width: 360px;
-    height: 270px;
     display: flex;
     justify-content: center;
     align-items: center;

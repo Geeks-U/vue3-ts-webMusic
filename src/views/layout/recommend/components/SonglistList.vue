@@ -1,5 +1,5 @@
 <script setup lang="ts">
-
+import router from '@/router'
 
 type SonglistItemType = {
   id: number;
@@ -20,7 +20,7 @@ defineProps({
   <!-- 歌单列表容器 -->
   <div class="songlist-container">
     <!-- 歌单元素 -->
-    <div v-for="item in songlistList" :key="item.id" class="songlist-item">
+    <div v-for="item in songlistList" :key="item.id" class="songlist-item" @click="router.push(`/home/songlist/${item.id}`)">
       <!-- 上侧封面 -->
       <div class="image-container">
         <img :src="item.picUrl" class="image-container-image">
