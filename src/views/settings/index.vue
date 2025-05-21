@@ -1,18 +1,4 @@
-<template>
-  <div class="container">
-    <h2 class="title">请输入后端 API 地址</h2>
-    <input
-      v-model="apiUrl"
-      type="url"
-      placeholder="http://localhost:3000"
-      class="input"
-      @keyup.enter="saveApiUrl"
-    />
-    <button class="btn" @click="saveApiUrl">保存</button>
-  </div>
-</template>
-
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -28,6 +14,20 @@ function saveApiUrl() {
   }
 }
 </script>
+
+<template>
+  <div class="container">
+    <h2 class="title">请输入后端 API 地址</h2>
+    <input
+      v-model="apiUrl"
+      type="url"
+      placeholder="http://localhost:3000"
+      class="input"
+      @keyup.enter="saveApiUrl"
+    />
+    <button class="btn" @click="saveApiUrl">保存</button>
+  </div>
+</template>
 
 <style scoped>
 .container {
