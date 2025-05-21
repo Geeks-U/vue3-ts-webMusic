@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const baseUrl = 'http://localhost:3000'
+const baseUrl = sessionStorage.getItem('apiUrl') || 'http://localhost:3000'
 // userStore.cookie
 
 // 创建 Axios 实例
