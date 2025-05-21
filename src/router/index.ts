@@ -94,7 +94,7 @@ const router = createRouter({
 })
 
 // 如果目标路由不是设置页面，且没有配置 apiUrl，则跳转到设置页面
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _, next) => {
   const apiUrl = sessionStorage.getItem('apiUrl')
   if (!apiUrl && to.path !== '/settings') {
     next({ path: '/settings' })
